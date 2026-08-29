@@ -1,0 +1,10 @@
+{
+  "name": "Remix Remix SkillBridge",
+  "description": "Centralized digital capacity-building & learning management platform with competency tracking, skill-gap analysis, personalized recommendation engine, and verifiable certifications.\nMake this website voice controlable",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

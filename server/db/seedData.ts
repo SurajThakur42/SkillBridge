@@ -1,0 +1,1005 @@
+import bcrypt from 'bcryptjs';
+import type { DatabaseSchema } from './database.js';
+
+export function initialSeedData(): DatabaseSchema {
+  const salt = bcrypt.genSaltSync(10);
+  const defaultPasswordHash = bcrypt.hashSync('demo1234', salt);
+
+  const users = [
+    {
+      id: 'usr-learner-1',
+      name: 'Aarav Sharma',
+      email: 'learner@capacityconnect.demo',
+      passwordHash: defaultPasswordHash,
+      role: 'LEARNER' as const,
+      department: 'Software Engineering',
+      organization: 'National Digital Academy',
+      profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces',
+      targetRoleId: 'role-cloud-dev',
+      isActive: true,
+      createdAt: '2026-01-15T10:00:00Z',
+      updatedAt: '2026-08-20T14:30:00Z',
+    },
+    {
+      id: 'usr-learner-2',
+      name: 'Priya Patel',
+      email: 'priya.patel@capacityconnect.demo',
+      passwordHash: defaultPasswordHash,
+      role: 'LEARNER' as const,
+      department: 'Data & Analytics',
+      organization: 'National Digital Academy',
+      profileImage: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=faces',
+      targetRoleId: 'role-ai-data',
+      isActive: true,
+      createdAt: '2026-02-01T09:15:00Z',
+      updatedAt: '2026-08-22T11:00:00Z',
+    },
+    {
+      id: 'usr-learner-3',
+      name: 'Rohan Verma',
+      email: 'rohan.verma@capacityconnect.demo',
+      passwordHash: defaultPasswordHash,
+      role: 'LEARNER' as const,
+      department: 'Infrastructure & SecOps',
+      organization: 'National Digital Academy',
+      profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces',
+      targetRoleId: 'role-cybersecurity',
+      isActive: true,
+      createdAt: '2026-02-10T14:20:00Z',
+      updatedAt: '2026-08-21T09:45:00Z',
+    },
+    {
+      id: 'usr-trainer-1',
+      name: 'Dr. Vikramaditya Rao',
+      email: 'trainer@capacityconnect.demo',
+      passwordHash: defaultPasswordHash,
+      role: 'TRAINER' as const,
+      department: 'Cloud & Distributed Systems',
+      organization: 'National Digital Academy',
+      profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces',
+      isActive: true,
+      createdAt: '2025-11-10T08:00:00Z',
+      updatedAt: '2026-08-24T16:00:00Z',
+    },
+    {
+      id: 'usr-trainer-2',
+      name: 'Ananya Deshmukh',
+      email: 'ananya.deshmukh@capacityconnect.demo',
+      passwordHash: defaultPasswordHash,
+      role: 'TRAINER' as const,
+      department: 'Full-Stack Architecture',
+      organization: 'National Digital Academy',
+      profileImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces',
+      isActive: true,
+      createdAt: '2025-12-01T08:00:00Z',
+      updatedAt: '2026-08-24T16:00:00Z',
+    },
+    {
+      id: 'usr-admin-1',
+      name: 'Prof. Rajeshwar Kulkarni',
+      email: 'admin@capacityconnect.demo',
+      passwordHash: defaultPasswordHash,
+      role: 'ADMIN' as const,
+      department: 'Organizational Learning & Governance',
+      organization: 'National Digital Academy',
+      profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=faces',
+      isActive: true,
+      createdAt: '2025-10-01T00:00:00Z',
+      updatedAt: '2026-08-24T18:00:00Z',
+    }
+  ];
+
+  const targetRoles = [
+    {
+      id: 'role-cloud-dev',
+      name: 'Cloud Developer',
+      description: 'Designs, deploys, and manages scalable cloud-native architectures, containerized microservices, and serverless applications.',
+      icon: 'Cloud',
+      category: 'Cloud Engineering'
+    },
+    {
+      id: 'role-fullstack',
+      name: 'Full-Stack Developer',
+      description: 'Builds end-to-end web applications with modern frontend frameworks, backend APIs, relational databases, and secure authentication.',
+      icon: 'Layers',
+      category: 'Software Development'
+    },
+    {
+      id: 'role-ai-data',
+      name: 'AI & Data Analyst',
+      description: 'Extracts actionable business intelligence, constructs machine learning pipelines, and visualizes complex multidimensional data.',
+      icon: 'BarChart2',
+      category: 'Artificial Intelligence'
+    },
+    {
+      id: 'role-cybersecurity',
+      name: 'Cybersecurity Specialist',
+      description: 'Protects enterprise digital assets, conducts vulnerability assessments, implements zero-trust policies, and responds to threats.',
+      icon: 'ShieldCheck',
+      category: 'Information Security'
+    },
+    {
+      id: 'role-devops',
+      name: 'DevOps & SRE Engineer',
+      description: 'Automates continuous integration, infrastructure as code (IaC), zero-downtime deployments, and reliability telemetry.',
+      icon: 'Cpu',
+      category: 'Infrastructure & Operations'
+    }
+  ];
+
+  const skills = [
+    { id: 'sk-python', name: 'Python', description: 'Core programming, asynchronous programming, scripting, data handling and standard libraries', category: 'Programming' },
+    { id: 'sk-javascript', name: 'JavaScript', description: 'Modern ECMAScript, DOM manipulation, asynchronous promises, and runtime environments', category: 'Programming' },
+    { id: 'sk-typescript', name: 'TypeScript', description: 'Static typing, generics, interfaces, and enterprise code maintainability', category: 'Programming' },
+    { id: 'sk-sql', name: 'SQL & Relational DBs', description: 'Relational query design, indexing, normalization, transactions, and schema management', category: 'Database' },
+    { id: 'sk-git', name: 'Git & Version Control', description: 'Branching workflows, merge conflicts, interactive rebasing, pull requests, and GitOps', category: 'Tools' },
+    { id: 'sk-linux', name: 'Linux Fundamentals', description: 'Shell scripting, file permissions, process monitoring, systemd, and server administration', category: 'System' },
+    { id: 'sk-docker', name: 'Docker & Containers', description: 'Containerization, Dockerfile optimization, multi-stage builds, volumes, and networking', category: 'DevOps' },
+    { id: 'sk-k8s', name: 'Kubernetes Orchestration', description: 'Cluster architecture, Pods, Deployments, Services, ConfigMaps, and Ingress routing', category: 'DevOps' },
+    { id: 'sk-cloud', name: 'Cloud Computing (AWS/GCP)', description: 'Compute instances, object storage, serverless functions, IAM policies, and VPC networking', category: 'Cloud' },
+    { id: 'sk-react', name: 'React & UI Architecture', description: 'Component state, custom hooks, virtual DOM rendering, routing, and modern UI patterns', category: 'Frontend' },
+    { id: 'sk-node', name: 'Node.js & Express', description: 'Server-side runtime, middleware pipelines, RESTful controllers, and streaming data', category: 'Backend' },
+    { id: 'sk-rest', name: 'REST & API Security', description: 'API contract design, OpenAPI specifications, JWT authentication, rate limiting, and CORS', category: 'Backend' },
+    { id: 'sk-cicd', name: 'CI/CD Pipelines', description: 'Automated testing workflows, GitHub Actions, build artifacts, and automated deployments', category: 'DevOps' },
+    { id: 'sk-ml', name: 'Machine Learning Basics', description: 'Supervised/unsupervised algorithms, evaluation metrics, feature engineering, and model training', category: 'Data & AI' },
+    { id: 'sk-dataviz', name: 'Data Visualization', description: 'Exploratory data analytics, charting dashboards, interactive metrics, and storytelling', category: 'Data & AI' },
+    { id: 'sk-netsec', name: 'Network Security', description: 'Firewalls, TLS/SSL encryption, subnet segmentation, intrusion detection, and protocols', category: 'Security' },
+    { id: 'sk-appsec', name: 'Application Security (OWASP)', description: 'Mitigating SQLi, XSS, CSRF, insecure deserialization, and authentication bypasses', category: 'Security' },
+    { id: 'sk-sysdesign', name: 'System Design & Scalability', description: 'High-availability architectures, load balancing, caching strategies, and message queues', category: 'Architecture' },
+    { id: 'sk-communication', name: 'Technical Communication', description: 'Architecture documentation, cross-functional articulation, and stakeholder reporting', category: 'Soft Skills' },
+    { id: 'sk-agile', name: 'Agile & Scrum Delivery', description: 'Sprint planning, backlog refinement, user story estimation, and iterative delivery', category: 'Soft Skills' }
+  ];
+
+  // Map Target Roles to Required Skills
+  const targetRoleSkills = [
+    // Cloud Developer
+    { targetRoleId: 'role-cloud-dev', skillId: 'sk-python', requiredLevel: 'ADVANCED' as const, importance: 4 },
+    { targetRoleId: 'role-cloud-dev', skillId: 'sk-git', requiredLevel: 'INTERMEDIATE' as const, importance: 4 },
+    { targetRoleId: 'role-cloud-dev', skillId: 'sk-linux', requiredLevel: 'ADVANCED' as const, importance: 5 },
+    { targetRoleId: 'role-cloud-dev', skillId: 'sk-cloud', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-cloud-dev', skillId: 'sk-docker', requiredLevel: 'ADVANCED' as const, importance: 5 },
+    { targetRoleId: 'role-cloud-dev', skillId: 'sk-k8s', requiredLevel: 'INTERMEDIATE' as const, importance: 4 },
+    { targetRoleId: 'role-cloud-dev', skillId: 'sk-rest', requiredLevel: 'INTERMEDIATE' as const, importance: 3 },
+
+    // Full-Stack Developer
+    { targetRoleId: 'role-fullstack', skillId: 'sk-javascript', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-fullstack', skillId: 'sk-typescript', requiredLevel: 'ADVANCED' as const, importance: 4 },
+    { targetRoleId: 'role-fullstack', skillId: 'sk-react', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-fullstack', skillId: 'sk-node', requiredLevel: 'ADVANCED' as const, importance: 5 },
+    { targetRoleId: 'role-fullstack', skillId: 'sk-sql', requiredLevel: 'ADVANCED' as const, importance: 4 },
+    { targetRoleId: 'role-fullstack', skillId: 'sk-rest', requiredLevel: 'ADVANCED' as const, importance: 4 },
+    { targetRoleId: 'role-fullstack', skillId: 'sk-git', requiredLevel: 'INTERMEDIATE' as const, importance: 3 },
+
+    // AI & Data Analyst
+    { targetRoleId: 'role-ai-data', skillId: 'sk-python', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-ai-data', skillId: 'sk-sql', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-ai-data', skillId: 'sk-ml', requiredLevel: 'ADVANCED' as const, importance: 5 },
+    { targetRoleId: 'role-ai-data', skillId: 'sk-dataviz', requiredLevel: 'ADVANCED' as const, importance: 4 },
+    { targetRoleId: 'role-ai-data', skillId: 'sk-git', requiredLevel: 'INTERMEDIATE' as const, importance: 3 },
+
+    // Cybersecurity Specialist
+    { targetRoleId: 'role-cybersecurity', skillId: 'sk-netsec', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-cybersecurity', skillId: 'sk-appsec', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-cybersecurity', skillId: 'sk-linux', requiredLevel: 'ADVANCED' as const, importance: 4 },
+    { targetRoleId: 'role-cybersecurity', skillId: 'sk-python', requiredLevel: 'INTERMEDIATE' as const, importance: 3 },
+    { targetRoleId: 'role-cybersecurity', skillId: 'sk-cloud', requiredLevel: 'INTERMEDIATE' as const, importance: 4 },
+
+    // DevOps & SRE Engineer
+    { targetRoleId: 'role-devops', skillId: 'sk-linux', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-devops', skillId: 'sk-docker', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-devops', skillId: 'sk-k8s', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-devops', skillId: 'sk-cicd', requiredLevel: 'EXPERT' as const, importance: 5 },
+    { targetRoleId: 'role-devops', skillId: 'sk-cloud', requiredLevel: 'ADVANCED' as const, importance: 5 },
+    { targetRoleId: 'role-devops', skillId: 'sk-sysdesign', requiredLevel: 'ADVANCED' as const, importance: 4 },
+    { targetRoleId: 'role-devops', skillId: 'sk-git', requiredLevel: 'ADVANCED' as const, importance: 4 }
+  ];
+
+  // Baseline UserSkills for Demo Learner (Aarav) - specifically designed for SIH presentation
+  // Shows Python = 78, Git = 65, SQL = 60, Linux = 30, Cloud = 20, Docker = 10, K8s = 0
+  const userSkills = [
+    { userId: 'usr-learner-1', skillId: 'sk-python', competencyLevel: 'ADVANCED' as const, score: 78, lastAssessedAt: '2026-08-10T10:00:00Z' },
+    { userId: 'usr-learner-1', skillId: 'sk-git', competencyLevel: 'INTERMEDIATE' as const, score: 65, lastAssessedAt: '2026-08-12T11:30:00Z' },
+    { userId: 'usr-learner-1', skillId: 'sk-sql', competencyLevel: 'INTERMEDIATE' as const, score: 60, lastAssessedAt: '2026-08-14T09:00:00Z' },
+    { userId: 'usr-learner-1', skillId: 'sk-javascript', competencyLevel: 'INTERMEDIATE' as const, score: 55, lastAssessedAt: '2026-08-15T14:00:00Z' },
+    { userId: 'usr-learner-1', skillId: 'sk-linux', competencyLevel: 'BEGINNER' as const, score: 30, lastAssessedAt: '2026-08-18T16:00:00Z' },
+    { userId: 'usr-learner-1', skillId: 'sk-cloud', competencyLevel: 'BEGINNER' as const, score: 20, lastAssessedAt: '2026-08-19T10:00:00Z' },
+    { userId: 'usr-learner-1', skillId: 'sk-docker', competencyLevel: 'BEGINNER' as const, score: 10, lastAssessedAt: '2026-08-20T12:00:00Z' },
+
+    // Learner 2 skills (Priya)
+    { userId: 'usr-learner-2', skillId: 'sk-python', competencyLevel: 'EXPERT' as const, score: 92, lastAssessedAt: '2026-08-15T10:00:00Z' },
+    { userId: 'usr-learner-2', skillId: 'sk-sql', competencyLevel: 'ADVANCED' as const, score: 85, lastAssessedAt: '2026-08-16T11:00:00Z' },
+    { userId: 'usr-learner-2', skillId: 'sk-ml', competencyLevel: 'INTERMEDIATE' as const, score: 68, lastAssessedAt: '2026-08-18T14:00:00Z' },
+    { userId: 'usr-learner-2', skillId: 'sk-dataviz', competencyLevel: 'ADVANCED' as const, score: 75, lastAssessedAt: '2026-08-20T09:00:00Z' },
+
+    // Learner 3 skills (Rohan)
+    { userId: 'usr-learner-3', skillId: 'sk-netsec', competencyLevel: 'ADVANCED' as const, score: 82, lastAssessedAt: '2026-08-14T10:00:00Z' },
+    { userId: 'usr-learner-3', skillId: 'sk-linux', competencyLevel: 'ADVANCED' as const, score: 78, lastAssessedAt: '2026-08-15T11:00:00Z' },
+    { userId: 'usr-learner-3', skillId: 'sk-appsec', competencyLevel: 'INTERMEDIATE' as const, score: 60, lastAssessedAt: '2026-08-17T12:00:00Z' }
+  ];
+
+  // 10 Full-Featured Courses
+  const courses = [
+    {
+      id: 'crs-cloud-foundations',
+      title: 'Cloud Computing Foundations & Architecture',
+      description: 'Master core cloud primitives, virtualization, managed storage, identity management, and serverless compute on modern cloud providers.',
+      thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80',
+      category: 'Cloud Engineering',
+      difficulty: 'BEGINNER' as const,
+      duration: '4.5 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-1',
+      createdAt: '2026-01-10T10:00:00Z',
+      updatedAt: '2026-08-15T12:00:00Z',
+    },
+    {
+      id: 'crs-docker-containers',
+      title: 'Docker & Containerization for Developers',
+      description: 'Build, package, run, and optimize containerized microservices. Learn multi-stage builds, networking, volumes, and Docker Compose.',
+      thumbnail: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=800&auto=format&fit=crop&q=80',
+      category: 'DevOps',
+      difficulty: 'INTERMEDIATE' as const,
+      duration: '5.0 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-1',
+      createdAt: '2026-01-20T10:00:00Z',
+      updatedAt: '2026-08-18T14:00:00Z',
+    },
+    {
+      id: 'crs-linux-sysadmin',
+      title: 'Linux Systems & Shell Mastery',
+      description: 'Comprehensive guide to Linux architecture, bash scripting, permission models, systemd services, and production server diagnostics.',
+      thumbnail: 'https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=800&auto=format&fit=crop&q=80',
+      category: 'System',
+      difficulty: 'BEGINNER' as const,
+      duration: '6.0 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-1',
+      createdAt: '2026-01-25T10:00:00Z',
+      updatedAt: '2026-08-19T10:00:00Z',
+    },
+    {
+      id: 'crs-k8s-production',
+      title: 'Kubernetes in Production: Deployments & Scaling',
+      description: 'Master enterprise container orchestration with Kubernetes. Deploy pods, services, ingress controllers, config maps, and autoscaling policies.',
+      thumbnail: 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=800&auto=format&fit=crop&q=80',
+      category: 'DevOps',
+      difficulty: 'ADVANCED' as const,
+      duration: '8.0 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-1',
+      createdAt: '2026-02-05T10:00:00Z',
+      updatedAt: '2026-08-20T11:00:00Z',
+    },
+    {
+      id: 'crs-fullstack-react-node',
+      title: 'Full-Stack Architecture with React & Node.js',
+      description: 'Design and implement production-ready web systems. Connect React frontends with Express APIs, JWT security, and relational Postgres databases.',
+      thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80',
+      category: 'Software Development',
+      difficulty: 'INTERMEDIATE' as const,
+      duration: '7.5 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-2',
+      createdAt: '2026-02-12T10:00:00Z',
+      updatedAt: '2026-08-21T15:00:00Z',
+    },
+    {
+      id: 'crs-python-data-science',
+      title: 'Applied Machine Learning & Data Analytics with Python',
+      description: 'From NumPy and Pandas to Scikit-Learn pipelines. Clean real-world datasets, construct predictive models, and evaluate precision/recall.',
+      thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80',
+      category: 'Artificial Intelligence',
+      difficulty: 'ADVANCED' as const,
+      duration: '9.0 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-2',
+      createdAt: '2026-02-18T10:00:00Z',
+      updatedAt: '2026-08-22T09:00:00Z',
+    },
+    {
+      id: 'crs-appsec-owasp',
+      title: 'Application Security & OWASP Top 10 Mitigation',
+      description: 'Defend against the most critical web vulnerabilities. Learn hands-on threat modeling, secure code audits, and defense-in-depth engineering.',
+      thumbnail: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop&q=80',
+      category: 'Information Security',
+      difficulty: 'ADVANCED' as const,
+      duration: '6.5 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-1',
+      createdAt: '2026-03-01T10:00:00Z',
+      updatedAt: '2026-08-22T14:00:00Z',
+    },
+    {
+      id: 'crs-git-devops',
+      title: 'Advanced Git Workflows & CI/CD Pipelines',
+      description: 'Scale collaborative engineering with feature branch strategies, trunk-based development, semantic versioning, and GitHub Actions automation.',
+      thumbnail: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800&auto=format&fit=crop&q=80',
+      category: 'DevOps',
+      difficulty: 'BEGINNER' as const,
+      duration: '4.0 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-2',
+      createdAt: '2026-03-10T10:00:00Z',
+      updatedAt: '2026-08-23T10:00:00Z',
+    },
+    {
+      id: 'crs-sql-mastery',
+      title: 'Relational Database Engineering & Query Optimization',
+      description: 'Design robust 3NF schemas, master window functions, analyze EXPLAIN execution plans, and eliminate bottleneck table scans.',
+      thumbnail: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=800&auto=format&fit=crop&q=80',
+      category: 'Database',
+      difficulty: 'INTERMEDIATE' as const,
+      duration: '5.5 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-2',
+      createdAt: '2026-03-15T10:00:00Z',
+      updatedAt: '2026-08-23T11:00:00Z',
+    },
+    {
+      id: 'crs-system-design',
+      title: 'High-Scale Distributed Systems & Microservices',
+      description: 'Architect resilient internet-scale applications. Learn caching patterns, event-driven messaging, CAP theorem trade-offs, and database sharding.',
+      thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
+      category: 'Architecture',
+      difficulty: 'ADVANCED' as const,
+      duration: '8.5 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: 'usr-trainer-1',
+      createdAt: '2026-03-20T10:00:00Z',
+      updatedAt: '2026-08-24T09:00:00Z',
+    }
+  ];
+
+  // Course Skills mappings
+  const courseSkills = [
+    { courseId: 'crs-cloud-foundations', skillId: 'sk-cloud', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-cloud-foundations', skillId: 'sk-linux', targetLevel: 'INTERMEDIATE' as const },
+    
+    { courseId: 'crs-docker-containers', skillId: 'sk-docker', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-docker-containers', skillId: 'sk-linux', targetLevel: 'INTERMEDIATE' as const },
+
+    { courseId: 'crs-linux-sysadmin', skillId: 'sk-linux', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-linux-sysadmin', skillId: 'sk-netsec', targetLevel: 'BEGINNER' as const },
+
+    { courseId: 'crs-k8s-production', skillId: 'sk-k8s', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-k8s-production', skillId: 'sk-docker', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-k8s-production', skillId: 'sk-cloud', targetLevel: 'ADVANCED' as const },
+
+    { courseId: 'crs-fullstack-react-node', skillId: 'sk-react', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-fullstack-react-node', skillId: 'sk-node', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-fullstack-react-node', skillId: 'sk-rest', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-fullstack-react-node', skillId: 'sk-javascript', targetLevel: 'ADVANCED' as const },
+
+    { courseId: 'crs-python-data-science', skillId: 'sk-python', targetLevel: 'EXPERT' as const },
+    { courseId: 'crs-python-data-science', skillId: 'sk-ml', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-python-data-science', skillId: 'sk-dataviz', targetLevel: 'ADVANCED' as const },
+
+    { courseId: 'crs-appsec-owasp', skillId: 'sk-appsec', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-appsec-owasp', skillId: 'sk-netsec', targetLevel: 'ADVANCED' as const },
+
+    { courseId: 'crs-git-devops', skillId: 'sk-git', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-git-devops', skillId: 'sk-cicd', targetLevel: 'INTERMEDIATE' as const },
+
+    { courseId: 'crs-sql-mastery', skillId: 'sk-sql', targetLevel: 'ADVANCED' as const },
+
+    { courseId: 'crs-system-design', skillId: 'sk-sysdesign', targetLevel: 'ADVANCED' as const },
+    { courseId: 'crs-system-design', skillId: 'sk-cloud', targetLevel: 'ADVANCED' as const }
+  ];
+
+  // Modules for courses
+  const courseModules = [
+    // crs-cloud-foundations modules
+    { id: 'mod-cloud-1', courseId: 'crs-cloud-foundations', title: 'Module 1: Cloud Architecture Fundamentals & Core Primitives', description: 'Understanding compute virtual machines, storage buckets, VPC networking, and security perimeters.', order: 1 },
+    { id: 'mod-cloud-2', courseId: 'crs-cloud-foundations', title: 'Module 2: Serverless Compute & Cloud Functions', description: 'Event-driven architectures, API Gateways, trigger-based microservices, and concurrency scaling.', order: 2 },
+    { id: 'mod-cloud-3', courseId: 'crs-cloud-foundations', title: 'Module 3: Cloud IAM, Least Privilege & Infrastructure Security', description: 'Configuring roles, policies, service accounts, audit logging, and zero-trust credentials.', order: 3 },
+
+    // crs-docker-containers modules
+    { id: 'mod-docker-1', courseId: 'crs-docker-containers', title: 'Module 1: Container Core Engine & Image Building', description: 'Anatomy of containers, layer caching, Dockerfile syntax, and lightweight alpine images.', order: 1 },
+    { id: 'mod-docker-2', courseId: 'crs-docker-containers', title: 'Module 2: Multi-Container Composition & Networking', description: 'Configuring docker-compose.yml, internal DNS resolution, bridge networks, and volume persistence.', order: 2 },
+    { id: 'mod-docker-3', courseId: 'crs-docker-containers', title: 'Module 3: Production Security & Multi-Stage Builds', description: 'Non-root container execution, vulnerability scanning with Trivy, and image slimming techniques.', order: 3 },
+
+    // crs-linux-sysadmin modules
+    { id: 'mod-linux-1', courseId: 'crs-linux-sysadmin', title: 'Module 1: Linux Kernel Architecture & Navigation', description: 'Filesystem hierarchy standard, process management, top/htop telemetry, and piping streams.', order: 1 },
+    { id: 'mod-linux-2', courseId: 'crs-linux-sysadmin', title: 'Module 2: User Permissions, ACLs & SSH Hardening', description: 'Chmod/chown octal masks, sudoers configurations, ed25519 key authentication, and fail2ban.', order: 2 },
+    { id: 'mod-linux-3', courseId: 'crs-linux-sysadmin', title: 'Module 3: Systemd Unit Files & Automated Bash Scripting', description: 'Creating background daemon services, automated cron jobs, log rotation, and journalctl analysis.', order: 3 },
+
+    // crs-k8s-production modules
+    { id: 'mod-k8s-1', courseId: 'crs-k8s-production', title: 'Module 1: Control Plane Architecture & Pod Lifecycles', description: 'etcd, kube-apiserver, kube-scheduler, and declarative manifest specifications.', order: 1 },
+    { id: 'mod-k8s-2', courseId: 'crs-k8s-production', title: 'Module 2: Services, Ingress Controllers & Network Policies', description: 'ClusterIP, NodePort, LoadBalancers, TLS cert-manager, and East-West traffic segmentation.', order: 2 },
+    { id: 'mod-k8s-3', courseId: 'crs-k8s-production', title: 'Module 3: Horizontal Pod Autoscaling & Rolling Upgrades', description: 'Metrics-server setup, CPU/memory threshold triggers, readiness/liveness probes, and canary rollouts.', order: 3 },
+
+    // crs-fullstack-react-node modules
+    { id: 'mod-fullstack-1', courseId: 'crs-fullstack-react-node', title: 'Module 1: REST API Engineering & Express Middleware', description: 'Route controllers, async error boundaries, input validation with Zod, and JWT header parsing.', order: 1 },
+    { id: 'mod-fullstack-2', courseId: 'crs-fullstack-react-node', title: 'Module 2: React State Architecture & TanStack Query', description: 'Server state management, optimistic mutations, caching invalidation, and custom hooks.', order: 2 },
+    { id: 'mod-fullstack-3', courseId: 'crs-fullstack-react-node', title: 'Module 3: Relational Persistence, Migrations & Security', description: 'Connection pooling, parameterized queries against SQL injection, and rate limiting.', order: 3 },
+
+    // crs-python-data-science modules
+    { id: 'mod-pyds-1', courseId: 'crs-python-data-science', title: 'Module 1: Data Wrangling & Exploration with Pandas', description: 'DataFrames, missing value imputation, group-by aggregations, and vectorized operations.', order: 1 },
+    { id: 'mod-pyds-2', courseId: 'crs-python-data-science', title: 'Module 2: Supervised Learning & Model Validation', description: 'Cross-validation, hyperparameter tuning with GridSearchCV, and ROC-AUC curve analysis.', order: 2 },
+    { id: 'mod-pyds-3', courseId: 'crs-python-data-science', title: 'Module 3: Model Serialization & API Inference Serving', description: 'Exporting models with Joblib/ONNX and serving real-time predictions with FastAPI.', order: 3 },
+
+    // crs-appsec-owasp modules
+    { id: 'mod-appsec-1', courseId: 'crs-appsec-owasp', title: 'Module 1: Injection Flaws & Broken Object Level Auth', description: 'Identifying SQL injection vectors, NoSQL tampering, and IDOR vulnerabilities.', order: 1 },
+    { id: 'mod-appsec-2', courseId: 'crs-appsec-owasp', title: 'Module 2: Cross-Site Scripting (XSS) & CSRF Defense', description: 'DOM/Reflected/Stored XSS mitigations, Content Security Policy (CSP), and SameSite cookies.', order: 2 },
+    { id: 'mod-appsec-3', courseId: 'crs-appsec-owasp', title: 'Module 3: Security Headers, Cryptography & SAST Tools', description: 'Implementing HSTS, secure hashing (Argon2/Bcrypt), and automated dependency audits.', order: 3 },
+
+    // crs-git-devops modules
+    { id: 'mod-git-1', courseId: 'crs-git-devops', title: 'Module 1: Advanced Git Internals & Rebase Workflows', description: 'Git tree objects, DAG commit graphs, interactive rebase squashing, and reflog recovery.', order: 1 },
+    { id: 'mod-git-2', courseId: 'crs-git-devops', title: 'Module 2: Automated Testing Pipelines with GitHub Actions', description: 'Matrix builds, caching dependencies, secret management, and pull-request gating.', order: 2 },
+    { id: 'mod-git-3', courseId: 'crs-git-devops', title: 'Module 3: Semantic Versioning & Release Automation', description: 'Conventional commits, automated changelog generation, and package publishing.', order: 3 },
+
+    // crs-sql-mastery modules
+    { id: 'mod-sql-1', courseId: 'crs-sql-mastery', title: 'Module 1: Relational Schema Modeling & Constraints', description: 'Primary/foreign key integrity, check constraints, composite unique indexes, and 3NF design.', order: 1 },
+    { id: 'mod-sql-2', courseId: 'crs-sql-mastery', title: 'Module 2: Advanced Window Functions & CTEs', description: 'ROW_NUMBER, RANK, LAG/LEAD, recursive common table expressions, and analytical slicing.', order: 2 },
+    { id: 'mod-sql-3', courseId: 'crs-sql-mastery', title: 'Module 3: Query Execution Analysis & B-Tree Indexing', description: 'Interpreting EXPLAIN ANALYZE trees, partial indexes, and preventing index degradation.', order: 3 },
+
+    // crs-system-design modules
+    { id: 'mod-sys-1', courseId: 'crs-system-design', title: 'Module 1: High Availability & Load Balancing Strategies', description: 'Layer 4 vs Layer 7 routing, round-robin, consistent hashing, and health check algorithms.', order: 1 },
+    { id: 'mod-sys-2', courseId: 'crs-system-design', title: 'Module 2: Distributed Caching & Event Messaging', description: 'Redis cache-aside/write-through policies, Kafka message brokers, and idempotency guarantees.', order: 2 },
+    { id: 'mod-sys-3', courseId: 'crs-system-design', title: 'Module 3: Database Sharding & Microservice Resiliency', description: 'Horizontal partitioning, distributed locking, circuit breakers, and rate limiters.', order: 3 }
+  ];
+
+  // Learning Resources for each module
+  const learningResources = [
+    {
+      id: 'res-cloud-1',
+      moduleId: 'mod-cloud-1',
+      title: 'Cloud Primitives: Compute, Block Storage, and Object Buckets',
+      type: 'ARTICLE' as const,
+      duration: '15 min read',
+      content: `## 1. Fundamentals of Modern Cloud Architecture
+Cloud computing operates on three primary resource abstractions:
+
+1. **Virtual Compute (IaaS/PaaS)**: Virtual machines or containers running on hypervisors, enabling dynamic scaling, isolated tenant execution, and automated failover.
+2. **Object Storage**: High-durability distributed storage systems (such as AWS S3 or Google Cloud Storage) providing 99.999999999% (11 9's) durability through geographic replication and checksum verification.
+3. **Software-Defined Networking (SDN/VPC)**: Isolated virtual private clouds with customizable CIDR subnets, security group firewalls, and managed internet gateways.
+
+### Key Architectural Principle:
+Always decouple stateful storage from stateless compute nodes to allow elastic horizontal autoscaling without session loss.`
+    },
+    {
+      id: 'res-cloud-2',
+      moduleId: 'mod-cloud-1',
+      title: 'Video Guide: Deploying Resilient VPCs & Subnet Routing',
+      type: 'VIDEO' as const,
+      duration: '22 mins',
+      url: 'https://www.youtube.com/embed/g2J6LhTtg3U',
+      content: 'In this recorded deep-dive, we construct a multi-AZ Virtual Private Cloud with public load-balancer subnets and private application database subnets.'
+    },
+    {
+      id: 'res-cloud-3',
+      moduleId: 'mod-cloud-2',
+      title: 'Serverless Execution Model & Event-Driven triggers',
+      type: 'TEXT' as const,
+      duration: '20 min read',
+      content: `## Serverless Execution Paradigms
+Serverless architectures abstract server provisioning and capacity planning.
+
+- **Event Sources**: HTTP requests via API Gateway, object upload notifications, database change streams, or message queue events.
+- **Cold Start Optimization**: Minimize bundle sizes, initialize database connection pools outside the execution handler, and leverage provisioned concurrency when sub-second latency is critical.`
+    },
+    {
+      id: 'res-cloud-4',
+      moduleId: 'mod-cloud-3',
+      title: 'Zero Trust Cloud IAM & Role-Based Access Control',
+      type: 'ARTICLE' as const,
+      duration: '18 min read',
+      content: `## Principles of Cloud IAM Governance
+- **Principle of Least Privilege**: Grant only the minimal permissions required for a service or user to execute their role.
+- **Temporary Security Tokens**: Avoid long-lived access keys; use IAM roles and identity federation with OIDC providers.`
+    },
+
+    // Docker resources
+    {
+      id: 'res-doc-1',
+      moduleId: 'mod-docker-1',
+      title: 'Anatomy of Docker Containers and Layer Caching',
+      type: 'ARTICLE' as const,
+      duration: '18 min read',
+      content: `## How Containers Work
+Containers leverage Linux kernel **namespaces** (for process, mount, and network isolation) and **cgroups** (for CPU/memory resource limits).
+
+### Dockerfile Best Practices:
+1. Put infrequently changing steps (e.g. \`COPY package.json\`, \`npm install\`) near the top.
+2. Put application code that changes frequently near the bottom.
+3. Use multi-stage builds to discard heavy build tools and compilers from the final production runtime image.`
+    },
+    {
+      id: 'res-doc-2',
+      moduleId: 'mod-docker-2',
+      title: 'Interactive Guide: Multi-Container Networking with Docker Compose',
+      type: 'TEXT' as const,
+      duration: '25 min read',
+      content: `## Orchestrating Multi-Tier Applications
+Docker Compose enables defining declarative multi-container topologies.
+
+\`\`\`yaml
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://app:secret@db:5432/appdb
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
+\`\`\`
+Containers resolve each other seamlessly using internal Docker DNS via their service names.`
+    },
+    {
+      id: 'res-doc-3',
+      moduleId: 'mod-docker-3',
+      title: 'Production Hardening: Multi-Stage Builds & Non-Root Users',
+      type: 'ARTICLE' as const,
+      duration: '20 min read',
+      content: `## Container Security Checklist
+1. **Never run containers as root**: Add \`USER node\` or \`USER 1001\` in your Dockerfile.
+2. **Minimal Base Images**: Use distroless or alpine images to minimize CVE attack surfaces.
+3. **Read-only Filesystems**: Mount ephemeral scratch directories in tmpfs.`
+    },
+
+    // Linux resources
+    {
+      id: 'res-lin-1',
+      moduleId: 'mod-linux-1',
+      title: 'Linux Process Management & System Diagnostics',
+      type: 'ARTICLE' as const,
+      duration: '20 min read',
+      content: `## Linux Core Telemetry
+Master essential terminal tools:
+- \`ps aux | grep node\` - Identify running processes and process IDs (PID).
+- \`lsof -i :3000\` - Discover which process has bound to port 3000.
+- \`df -h\` and \`du -sh *\` - Diagnose disk usage bottlenecks.
+- \`top\` / \`htop\` - Real-time CPU, load average, and memory utilization.`
+    },
+    {
+      id: 'res-lin-2',
+      moduleId: 'mod-linux-2',
+      title: 'POSIX Permissions, Sudoers & SSH Key Pair Generation',
+      type: 'TEXT' as const,
+      duration: '15 min read',
+      content: `## Understanding Octal Permissions
+- 755 (\`rwxr-xr-x\`): Owner has read/write/execute; Group and Others have read/execute.
+- 600 (\`rw-------\`): Strict private read/write for SSH private keys (\`~/.ssh/id_ed25519\`).`
+    },
+    {
+      id: 'res-lin-3',
+      moduleId: 'mod-linux-3',
+      title: 'Writing Production Systemd Units & Log Inspection',
+      type: 'ARTICLE' as const,
+      duration: '22 min read',
+      content: `## Systemd Service Management
+Create a unit file in \`/etc/systemd/system/myapp.service\` to ensure automated restart on crash, environment variable injection, and structured logging via \`journalctl -u myapp.service -f\`.`
+    }
+  ];
+
+  // Quizzes for courses (At least 5 questions per quiz)
+  const quizzes = [
+    {
+      id: 'quiz-cloud-foundations',
+      courseId: 'crs-cloud-foundations',
+      moduleId: 'mod-cloud-3',
+      title: 'Cloud Foundations & Architecture Competency Assessment',
+      passingScore: 70
+    },
+    {
+      id: 'quiz-docker-containers',
+      courseId: 'crs-docker-containers',
+      moduleId: 'mod-docker-3',
+      title: 'Docker & Microservices Containerization Assessment',
+      passingScore: 70
+    },
+    {
+      id: 'quiz-linux-sysadmin',
+      courseId: 'crs-linux-sysadmin',
+      moduleId: 'mod-linux-3',
+      title: 'Linux Systems & Shell Mastery Evaluation',
+      passingScore: 70
+    },
+    {
+      id: 'quiz-k8s-production',
+      courseId: 'crs-k8s-production',
+      moduleId: 'mod-k8s-3',
+      title: 'Kubernetes Production Orchestration Assessment',
+      passingScore: 70
+    },
+    {
+      id: 'quiz-fullstack-react-node',
+      courseId: 'crs-fullstack-react-node',
+      moduleId: 'mod-fullstack-3',
+      title: 'Full-Stack Web Architecture Assessment',
+      passingScore: 70
+    },
+    {
+      id: 'quiz-python-data-science',
+      courseId: 'crs-python-data-science',
+      moduleId: 'mod-pyds-3',
+      title: 'Python Machine Learning & Data Analytics Assessment',
+      passingScore: 70
+    },
+    {
+      id: 'quiz-appsec-owasp',
+      courseId: 'crs-appsec-owasp',
+      moduleId: 'mod-appsec-3',
+      title: 'Application Security & OWASP Top 10 Assessment',
+      passingScore: 70
+    },
+    {
+      id: 'quiz-git-devops',
+      courseId: 'crs-git-devops',
+      moduleId: 'mod-git-3',
+      title: 'Git Version Control & CI/CD Pipelines Assessment',
+      passingScore: 70
+    },
+    {
+      id: 'quiz-sql-mastery',
+      courseId: 'crs-sql-mastery',
+      moduleId: 'mod-sql-3',
+      title: 'Relational Database Engineering Assessment',
+      passingScore: 70
+    },
+    {
+      id: 'quiz-system-design',
+      courseId: 'crs-system-design',
+      moduleId: 'mod-sys-3',
+      title: 'High-Scale Distributed Systems Assessment',
+      passingScore: 70
+    }
+  ];
+
+  const quizQuestions = [
+    // Cloud foundations questions (5 high quality questions)
+    {
+      id: 'q-cloud-1',
+      quizId: 'quiz-cloud-foundations',
+      question: 'Which cloud computing architectural characteristic ensures that stateless compute nodes can scale up and down dynamically without user session loss?',
+      options: [
+        'Decoupling stateful storage into dedicated managed databases and caches',
+        'Increasing CPU clock speed on a single monolithic compute instance',
+        'Storing session state in local server memory variables',
+        'Disabling reverse proxy caching headers'
+      ],
+      correctAnswer: 0,
+      marks: 2,
+      explanation: 'Decoupling session and database state from compute instances allows any node to handle incoming requests interchangeably.'
+    },
+    {
+      id: 'q-cloud-2',
+      quizId: 'quiz-cloud-foundations',
+      question: 'What is the primary security advantage of placing database instances in private subnets within a Virtual Private Cloud (VPC)?',
+      options: [
+        'It speeds up database write IOPS',
+        'It prevents direct public internet ingress while allowing controlled access from application servers',
+        'It removes the need for database user passwords',
+        'It makes database backups redundant'
+      ],
+      correctAnswer: 1,
+      marks: 2,
+      explanation: 'Private subnets have no direct route to the Internet Gateway, protecting database ports from unauthorized external access.'
+    },
+    {
+      id: 'q-cloud-3',
+      quizId: 'quiz-cloud-foundations',
+      question: 'In cloud Identity & Access Management (IAM), what does the "Principle of Least Privilege" dictate?',
+      options: [
+        'All team members should have AdministratorAccess for maximum productivity',
+        'Entities should be granted only the minimal permissions strictly necessary to perform their required tasks',
+        'Credentials should never be rotated',
+        'Root account API keys should be embedded directly into frontend code'
+      ],
+      correctAnswer: 1,
+      marks: 2,
+      explanation: 'Least privilege minimizes the potential damage if a credential or identity is compromised.'
+    },
+    {
+      id: 'q-cloud-4',
+      quizId: 'quiz-cloud-foundations',
+      question: 'How do managed Cloud Object Storage services (e.g. S3, Google Cloud Storage) achieve 99.999999999% data durability?',
+      options: [
+        'By utilizing faster solid state NVMe drives',
+        'By automatically replicating data chunks across multiple geographically separated availability zones',
+        'By compressing all files into single zip archives',
+        'By restricting file sizes to under 1 Megabyte'
+      ],
+      correctAnswer: 1,
+      marks: 2,
+      explanation: 'High durability is achieved via multi-region or multi-AZ erasure coding and automatic continuous parity checks.'
+    },
+    {
+      id: 'q-cloud-5',
+      quizId: 'quiz-cloud-foundations',
+      question: 'When architecting serverless functions, which practice is most effective in mitigating cold-start latency?',
+      options: [
+        'Increasing the code bundle size to include every possible dependency',
+        'Initializing database connections outside the request handler to reuse connection pools across invocations',
+        'Restarting the container on every single request',
+        'Disabling all HTTPS SSL handshakes'
+      ],
+      correctAnswer: 1,
+      marks: 2,
+      explanation: 'Globals declared outside the function handler persist across warm container invocations.'
+    },
+
+    // Docker Questions
+    {
+      id: 'q-docker-1',
+      quizId: 'quiz-docker-containers',
+      question: 'Which two Linux kernel mechanisms form the core foundational pillars of Docker container isolation?',
+      options: [
+        'Namespaces (for isolation) and Control Groups / cgroups (for resource limits)',
+        'GRUB bootloader and swap partition limits',
+        'Cron daemons and syslog forwarding',
+        'X11 window system and ALSA audio drivers'
+      ],
+      correctAnswer: 0,
+      marks: 2,
+      explanation: 'Namespaces isolate PIDs, mounts, and network interfaces; cgroups enforce CPU and memory boundaries.'
+    },
+    {
+      id: 'q-docker-2',
+      quizId: 'quiz-docker-containers',
+      question: 'Why should multi-stage builds be used when packaging production container images?',
+      options: [
+        'They eliminate the need for a Dockerfile',
+        'They leave behind build dependencies, compilers, and source files, yielding a lightweight and secure final image',
+        'They automatically run load testing against the database',
+        'They grant root administrator privileges to all container processes'
+      ],
+      correctAnswer: 1,
+      marks: 2,
+      explanation: 'Multi-stage builds allow compiling in a heavyweight builder stage and copying only compiled binaries into a slim runtime image.'
+    },
+    {
+      id: 'q-docker-3',
+      quizId: 'quiz-docker-containers',
+      question: 'In Docker Compose, how do containers communicate with one another on the same user-defined bridge network?',
+      options: [
+        'By hardcoding public IP addresses into the application code',
+        'Using internal Docker DNS resolution via their service names defined in docker-compose.yml',
+        'By transmitting data over Bluetooth sockets',
+        'By writing files to the host desktop directory'
+      ],
+      correctAnswer: 1,
+      marks: 2,
+      explanation: 'Docker provides an embedded DNS server on user-defined networks that resolves service names directly to container IPs.'
+    },
+    {
+      id: 'q-docker-4',
+      quizId: 'quiz-docker-containers',
+      question: 'What is the security risk of running container workloads as the default "root" user inside a container?',
+      options: [
+        'The container will crash due to lack of RAM',
+        'If a container breakout vulnerability occurs, the attacker may gain root privileges on the underlying host kernel',
+        'Docker Compose will reject the configuration file',
+        'The container cannot bind to port 3000'
+      ],
+      correctAnswer: 1,
+      marks: 2,
+      explanation: 'Running as non-root mitigates the severity of container escapes and unauthorized host modification.'
+    },
+    {
+      id: 'q-docker-5',
+      quizId: 'quiz-docker-containers',
+      question: 'How should persistent database data be handled in Docker to ensure data survives container restarts and upgrades?',
+      options: [
+        'Write data directly into the ephemeral container writable layer',
+        'Mount a named Docker volume or host directory volume mapped to the container data path',
+        'Commit the running container to a new image every minute',
+        'Store all database records in environment variables'
+      ],
+      correctAnswer: 1,
+      marks: 2,
+      explanation: 'Volumes bypass the union filesystem and write directly to host storage, preserving data independently of container lifecycles.'
+    },
+
+    // Linux Questions
+    {
+      id: 'q-linux-1',
+      quizId: 'quiz-linux-sysadmin',
+      question: 'What does the octal permission code "755" represent on a Linux file or directory?',
+      options: [
+        'Owner: read/write/execute, Group: read/execute, Others: read/execute',
+        'Owner: read only, Group: write only, Others: execute only',
+        'Full read and write permissions for all anonymous users',
+        'Encrypted read-only archive file'
+      ],
+      correctAnswer: 0,
+      marks: 2,
+      explanation: '7 (4+2+1 = rwx) for Owner, 5 (4+0+1 = r-x) for Group, 5 (4+0+1 = r-x) for Others.'
+    },
+    {
+      id: 'q-linux-2',
+      quizId: 'quiz-linux-sysadmin',
+      question: 'Which terminal command allows an engineer to inspect which process is actively listening on TCP port 3000?',
+      options: [
+        'lsof -i :3000 (or ss -tulpn | grep 3000)',
+        'cat /etc/passwd',
+        'rm -rf /var/log',
+        'ping localhost:3000'
+      ],
+      correctAnswer: 0,
+      marks: 2,
+      explanation: 'lsof (list open files) and ss inspect socket listeners and associated PIDs.'
+    },
+    {
+      id: 'q-linux-3',
+      quizId: 'quiz-linux-sysadmin',
+      question: 'What is the primary role of systemd unit files (such as .service files) on modern Linux distributions?',
+      options: [
+        'To format hard drives on boot',
+        'To declare service dependencies, manage automated startups, enforce restart policies, and pipe daemon logs',
+        'To compile C++ source code into binaries',
+        'To render desktop wallpapers'
+      ],
+      correctAnswer: 1,
+      marks: 2,
+      explanation: 'Systemd acts as the PID 1 init system that manages services, timers, sockets, and recovery policies.'
+    },
+    {
+      id: 'q-linux-4',
+      quizId: 'quiz-linux-sysadmin',
+      question: 'Why is generating an Ed25519 SSH key pair preferred over legacy RSA 1024-bit keys?',
+      options: [
+        'Ed25519 offers superior cryptographic resistance, smaller key sizes, and faster signing operations',
+        'Ed25519 does not require a private key',
+        'Ed25519 keys can be shared publicly without security concern',
+        'RSA keys are incompatible with Linux terminals'
+      ],
+      correctAnswer: 0,
+      marks: 2,
+      explanation: 'Ed25519 is based on the Edwards-curve Digital Signature Algorithm, providing high security with minimal computational overhead.'
+    },
+    {
+      id: 'q-linux-5',
+      quizId: 'quiz-linux-sysadmin',
+      question: 'In Bash shell scripting, what does the "set -e" command at the start of a script enforce?',
+      options: [
+        'It causes the script to exit immediately if any command returns a non-zero exit status',
+        'It echoes every variable in uppercase',
+        'It suppresses all error logs',
+        'It encrypts the script file with AES-256'
+      ],
+      correctAnswer: 0,
+      marks: 2,
+      explanation: 'set -e prevents error cascading by aborting script execution on the first failing command.'
+    }
+  ];
+
+  // Initial Enrollments
+  const enrollments = [
+    {
+      id: 'enr-1',
+      userId: 'usr-learner-1',
+      courseId: 'crs-git-devops',
+      enrolledAt: '2026-08-01T10:00:00Z',
+      completedAt: '2026-08-08T15:00:00Z',
+      status: 'COMPLETED' as const
+    },
+    {
+      id: 'enr-2',
+      userId: 'usr-learner-1',
+      courseId: 'crs-sql-mastery',
+      enrolledAt: '2026-08-10T10:00:00Z',
+      completedAt: '2026-08-14T17:00:00Z',
+      status: 'COMPLETED' as const
+    },
+    {
+      id: 'enr-3',
+      userId: 'usr-learner-1',
+      courseId: 'crs-cloud-foundations',
+      enrolledAt: '2026-08-19T09:00:00Z',
+      status: 'IN_PROGRESS' as const
+    }
+  ];
+
+  // Lesson Progress for learner
+  const lessonProgress = [
+    // Completed Git course modules
+    { id: 'prog-1', userId: 'usr-learner-1', moduleId: 'mod-git-1', completed: true, completedAt: '2026-08-03T11:00:00Z' },
+    { id: 'prog-2', userId: 'usr-learner-1', moduleId: 'mod-git-2', completed: true, completedAt: '2026-08-05T14:00:00Z' },
+    { id: 'prog-3', userId: 'usr-learner-1', moduleId: 'mod-git-3', completed: true, completedAt: '2026-08-08T15:00:00Z' },
+    // Completed SQL course modules
+    { id: 'prog-4', userId: 'usr-learner-1', moduleId: 'mod-sql-1', completed: true, completedAt: '2026-08-11T12:00:00Z' },
+    { id: 'prog-5', userId: 'usr-learner-1', moduleId: 'mod-sql-2', completed: true, completedAt: '2026-08-13T16:00:00Z' },
+    { id: 'prog-6', userId: 'usr-learner-1', moduleId: 'mod-sql-3', completed: true, completedAt: '2026-08-14T17:00:00Z' },
+    // Cloud course module 1 completed
+    { id: 'prog-7', userId: 'usr-learner-1', moduleId: 'mod-cloud-1', completed: true, completedAt: '2026-08-20T10:00:00Z' }
+  ];
+
+  const quizAttempts = [
+    {
+      id: 'att-1',
+      quizId: 'quiz-git-devops',
+      userId: 'usr-learner-1',
+      score: 8,
+      percentage: 80,
+      passed: true,
+      attemptedAt: '2026-08-08T15:30:00Z'
+    },
+    {
+      id: 'att-2',
+      quizId: 'quiz-sql-mastery',
+      userId: 'usr-learner-1',
+      score: 9,
+      percentage: 90,
+      passed: true,
+      attemptedAt: '2026-08-14T17:30:00Z'
+    }
+  ];
+
+  const certificates = [
+    {
+      id: 'cert-1',
+      userId: 'usr-learner-1',
+      courseId: 'crs-git-devops',
+      certificateNumber: 'CC-2026-8A39F1',
+      score: 80,
+      issuedAt: '2026-08-08T16:00:00Z'
+    },
+    {
+      id: 'cert-2',
+      userId: 'usr-learner-1',
+      courseId: 'crs-sql-mastery',
+      certificateNumber: 'CC-2026-9B42E7',
+      score: 90,
+      issuedAt: '2026-08-14T18:00:00Z'
+    }
+  ];
+
+  const notifications = [
+    {
+      id: 'notif-1',
+      userId: 'usr-learner-1',
+      title: 'Target Role Set: Cloud Developer',
+      message: 'Your competency benchmarks and skill gap analysis have been calibrated for the Cloud Developer roadmap.',
+      type: 'RECOMMENDATION' as const,
+      isRead: true,
+      createdAt: '2026-08-15T10:00:00Z'
+    },
+    {
+      id: 'notif-2',
+      userId: 'usr-learner-1',
+      title: 'Skill Gap Identified: Docker & Containers',
+      message: 'A critical skill gap was detected in Docker & Containerization. "Docker & Containerization for Developers" is recommended.',
+      type: 'RECOMMENDATION' as const,
+      isRead: false,
+      createdAt: '2026-08-20T12:00:00Z'
+    },
+    {
+      id: 'notif-3',
+      userId: 'usr-learner-1',
+      title: 'Certificate Issued: Relational Database Engineering',
+      message: 'Congratulations! You passed the assessment with 90% score and your verifiable credential CC-2026-9B42E7 is ready.',
+      type: 'CERTIFICATE' as const,
+      isRead: false,
+      createdAt: '2026-08-14T18:00:00Z'
+    }
+  ];
+
+  return {
+    users,
+    targetRoles,
+    skills,
+    targetRoleSkills,
+    userSkills,
+    courses,
+    courseSkills,
+    courseModules,
+    learningResources,
+    enrollments,
+    lessonProgress,
+    quizzes,
+    quizQuestions,
+    quizAttempts,
+    certificates,
+    notifications
+  };
+}
