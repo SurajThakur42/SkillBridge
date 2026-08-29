@@ -57,6 +57,7 @@ export function LearnerDashboard() {
   const [learningPath, setLearningPath] = useState<LearningPathData | null>(null);
   const [enrollments, setEnrollments] = useState<EnrollmentItem[]>([]);
   const [certificates, setCertificates] = useState<CertificateItem[]>([]);
+  const skillComparisons = skillGap?.allSkillGaps || skillGap?.skillComparisons || [];
 
   // Interactive What-If Sandbox State
   const [showSandbox, setShowSandbox] = useState(false);
@@ -123,7 +124,7 @@ export function LearnerDashboard() {
     if (!skillGap || Object.keys(simulatedBoosts).length === 0) return baseReadiness;
     let totalScore = 0;
     let count = 0;
-    skillGap.skillComparisons.forEach(sc => {
+    skillComparisons.forEach(sc => {
       const current = simulatedBoosts[sc.skillId] !== undefined ? simulatedBoosts[sc.skillId] : sc.currentScore;
       const fraction = Math.min(100, (current / Math.max(1, sc.requiredScore)) * 100);
       totalScore += fraction;
@@ -135,7 +136,7 @@ export function LearnerDashboard() {
   const readiness = showSandbox ? simulatedReadiness : baseReadiness;
 
   // Prepare data for Radar Chart
-  const radarData = (skillGap?.skillComparisons || []).slice(0, 7).map(sc => {
+  const radarData = skillComparisons.slice(0, 7).map(sc => {
     const simScore = simulatedBoosts[sc.skillId] !== undefined ? simulatedBoosts[sc.skillId] : sc.currentScore;
     return {
       skill: sc.skillName.length > 12 ? sc.skillName.slice(0, 10) + '..' : sc.skillName,
@@ -148,7 +149,7 @@ export function LearnerDashboard() {
   const handleSimulateQuickBoost = () => {
     playSuccessSound(soundEnabled);
     const newBoosts: { [id: string]: number } = {};
-    (skillGap?.skillComparisons || []).forEach(sc => {
+    skillComparisons.forEach(sc => {
       newBoosts[sc.skillId] = Math.max(sc.currentScore, sc.requiredScore);
     });
     setSimulatedBoosts(newBoosts);
@@ -283,7 +284,7 @@ export function LearnerDashboard() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {(skillGap?.skillComparisons || []).map(sc => {
+            {skillComparisons.map(sc => {
               const currentVal = simulatedBoosts[sc.skillId] !== undefined ? simulatedBoosts[sc.skillId] : sc.currentScore;
               return (
                 <div key={sc.skillId} className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-amber-200 dark:border-slate-800 shadow-2xs space-y-1.5">

@@ -46,6 +46,7 @@ export interface SkillGapAnalysisResult {
   mediumGaps: SkillGapItem[];
   minorGaps: SkillGapItem[];
   allSkillGaps: SkillGapItem[];
+  skillComparisons?: SkillGapItem[];
 }
 
 export interface CourseRecommendation {
@@ -227,7 +228,8 @@ export class SkillEngine {
       criticalGaps,
       mediumGaps,
       minorGaps,
-      allSkillGaps: gapItems
+      allSkillGaps: gapItems,
+      skillComparisons: gapItems
     };
   }
 

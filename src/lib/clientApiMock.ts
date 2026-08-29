@@ -168,17 +168,56 @@ export function handleClientMockRequest<T = any>(endpoint: string, options: Requ
     return { message: 'Marked as read' } as any;
   }
 
-  if (url === '/api/users/certificates' && method === 'GET') {
+  if ((url === '/api/users/certificates' || url === '/api/courses/user/certificates') && method === 'GET') {
     const certs = db.certificates.filter(c => c.userId === currentUser?.id);
     const enriched = certs.map(c => {
       const course = db.courses.find(crs => crs.id === c.courseId);
       return {
-        ...c,
-        courseTitle: course?.title || 'Cloud Engineering Certificate',
-        userName: currentUser?.name || 'Aarav Sharma'
+        id: c.id,
+        certificateNumber: c.certificateNumber,
+        score: c.score,
+        issuedAt: c.issuedAt,
+        courseId: c.courseId,
+        courseTitle: course?.title || 'Course of Study',
+        category: course?.category || 'Technology',
+        recipientName: currentUser?.name || 'Learner',
+        organization: currentUser?.organization || 'National Digital Academy'
       };
     });
-    return enriched as any;
+    return { certificates: enriched } as any;
+  }
+
+  if (url === '/api/courses/user/enrollments' && method === 'GET') {
+    const userEnrollments = db.enrollments.filter(e => e.userId === currentUser?.id);
+    const enriched = userEnrollments.map(enr => {
+      const course = db.courses.find(c => c.id === enr.courseId);
+      const modules = db.courseModules.filter(m => m.courseId === enr.courseId);
+      const completedCount = modules.filter(m =>
+        db.lessonProgress.some(lp => lp.userId === currentUser?.id && lp.moduleId === m.id && lp.completed)
+      ).length;
+
+      const progressPercentage = modules.length > 0 ? Math.round((completedCount / modules.length) * 100) : 0;
+      const cert = db.certificates.find(c => c.userId === currentUser?.id && c.courseId === enr.courseId);
+
+      return {
+        enrollmentId: enr.id,
+        courseId: enr.courseId,
+        title: course?.title || 'Unknown Course',
+        thumbnail: course?.thumbnail || '',
+        category: course?.category || '',
+        difficulty: course?.difficulty || 'BEGINNER',
+        duration: course?.duration || '',
+        enrolledAt: enr.enrolledAt,
+        completedAt: enr.completedAt,
+        status: enr.status,
+        completedModulesCount: completedCount,
+        totalModulesCount: modules.length,
+        progressPercentage,
+        certificateId: cert?.id,
+        certificateNumber: cert?.certificateNumber
+      };
+    });
+    return { enrollments: enriched } as any;
   }
 
   if (url.startsWith('/api/users/certificates/verify/') || url.startsWith('/api/users/certificates/')) {
@@ -287,8 +326,15 @@ export function handleClientMockRequest<T = any>(endpoint: string, options: Requ
 
   // 4. QUIZ ROUTES
   if (url.startsWith('/api/quizzes/') && !url.includes('/submit') && method === 'GET') {
-    const quizId = url.split('/')[3];
-    const quiz = db.quizzes.find(q => q.id === quizId) || db.quizzes[0];
+    const parts = url.split('/');
+    let quiz;
+    if (parts[3] === 'course') {
+      const courseId = parts[4];
+      quiz = db.quizzes.find(q => q.courseId === courseId) || db.quizzes[0];
+    } else {
+      const quizId = parts[3];
+      quiz = db.quizzes.find(q => q.id === quizId) || db.quizzes[0];
+    }
     const questions = db.quizQuestions.filter(q => q.quizId === quiz.id);
     return { quiz, questions } as any;
   }
@@ -368,7 +414,7 @@ export function handleClientMockRequest<T = any>(endpoint: string, options: Requ
     return db.targetRoles as any;
   }
 
-  if (url === '/api/skills/gap-analysis' || url === '/api/skills/analysis') {
+  if (url === '/api/skills/gap-analysis' || url === '/api/skills/analysis' || url === '/api/skills/user/gap-analysis') {
     const targetRoleId = currentUser?.targetRoleId || 'role-cloud-dev';
     const targetRole = db.targetRoles.find(r => r.id === targetRoleId) || db.targetRoles[0];
     const roleSkills = db.targetRoleSkills.filter(trs => trs.targetRoleId === targetRole.id);
@@ -439,11 +485,12 @@ export function handleClientMockRequest<T = any>(endpoint: string, options: Requ
       criticalGaps,
       mediumGaps,
       minorGaps,
-      allSkillGaps
+      allSkillGaps,
+      skillComparisons: allSkillGaps
     } as any;
   }
 
-  if (url === '/api/skills/recommendations') {
+  if (url === '/api/skills/recommendations' || url === '/api/skills/user/recommendations') {
     const list = db.courses.map(c => {
       const enrollment = db.enrollments.find(e => e.courseId === c.id && e.userId === currentUser?.id);
       return {
@@ -462,10 +509,10 @@ export function handleClientMockRequest<T = any>(endpoint: string, options: Requ
         progressPercentage: enrollment?.status === 'COMPLETED' ? 100 : enrollment ? 50 : 0
       };
     });
-    return list as any;
+    return { recommendations: list } as any;
   }
 
-  if (url === '/api/skills/learning-path') {
+  if (url === '/api/skills/learning-path' || url === '/api/skills/user/learning-path') {
     const steps = [
       {
         stepNumber: 1,
@@ -520,7 +567,7 @@ export function handleClientMockRequest<T = any>(endpoint: string, options: Requ
     } as any;
   }
 
-  if (url === '/api/skills' && method === 'GET') {
+  if ((url === '/api/skills' || url === '/api/skills/user/profile') && method === 'GET') {
     const userSkills = db.userSkills.filter(us => us.userId === currentUser?.id);
     const enriched = db.skills.map(s => {
       const us = userSkills.find(u => u.skillId === s.id);
@@ -533,7 +580,266 @@ export function handleClientMockRequest<T = any>(endpoint: string, options: Requ
     return { skills: enriched, targetRoles: db.targetRoles } as any;
   }
 
-  // 6. TRAINER & ADMIN ROUTES
+  if (url === '/api/skills/user/calibrate' && method === 'POST') {
+    const { skillId, score } = body;
+    if (!skillId || typeof score !== 'number') {
+      return { error: 'skillId and numeric score (0-100) are required' } as any;
+    }
+    const skill = db.skills.find(s => s.id === skillId);
+    if (!skill) {
+      return { error: 'Skill not found' } as any;
+    }
+    const clampedScore = Math.max(0, Math.min(100, Math.round(score)));
+    const now = new Date().toISOString();
+    
+    let userSkill = db.userSkills.find(us => us.userId === currentUser?.id && us.skillId === skillId);
+    if (userSkill) {
+      userSkill.score = clampedScore;
+      userSkill.competencyLevel = clampedScore >= 95 ? 'EXPERT' : clampedScore >= 85 ? 'ADVANCED' : clampedScore >= 65 ? 'INTERMEDIATE' : 'BEGINNER';
+      userSkill.lastAssessedAt = now;
+    } else {
+      userSkill = {
+        userId: currentUser?.id || 'usr-learner-1',
+        skillId,
+        score: clampedScore,
+        competencyLevel: clampedScore >= 95 ? 'EXPERT' : clampedScore >= 85 ? 'ADVANCED' : clampedScore >= 65 ? 'INTERMEDIATE' : 'BEGINNER',
+        lastAssessedAt: now
+      };
+      db.userSkills.push(userSkill);
+    }
+    clientDatabase.save();
+    return {
+      message: `Calibrated ${skill.name} competency to ${clampedScore}%`,
+      userSkill
+    } as any;
+  }
+
+  // 6. TRAINER ROUTES
+  if (url === '/api/trainer/dashboard' && method === 'GET') {
+    const trainerCourses = currentUser?.role === 'ADMIN' 
+      ? db.courses 
+      : db.courses.filter(c => c.trainerId === currentUser?.id);
+    const courseIds = trainerCourses.map(c => c.id);
+    const enrollments = db.enrollments.filter(e => courseIds.includes(e.courseId));
+    const uniqueLearnerIds = Array.from(new Set(enrollments.map(e => e.userId)));
+    const completedEnrollments = enrollments.filter(e => e.status === 'COMPLETED');
+    const avgCompletionRate = enrollments.length > 0 ? Math.round((completedEnrollments.length / enrollments.length) * 100) : 0;
+    
+    const quizIds = db.quizzes.filter(q => courseIds.includes(q.courseId)).map(q => q.id);
+    const attempts = db.quizAttempts.filter(qa => quizIds.includes(qa.quizId));
+    const avgQuizScore = attempts.length > 0 ? Math.round(attempts.reduce((acc, curr) => acc + curr.percentage, 0) / attempts.length) : 0;
+
+    const coursesWithDetails = trainerCourses.map(course => {
+      const courseEnrollments = db.enrollments.filter(e => e.courseId === course.id);
+      const courseCompletions = courseEnrollments.filter(e => e.status === 'COMPLETED');
+      const courseQuiz = db.quizzes.find(q => q.courseId === course.id);
+      const courseAttempts = courseQuiz ? db.quizAttempts.filter(qa => qa.quizId === courseQuiz.id) : [];
+      const avgScore = courseAttempts.length > 0 ? Math.round(courseAttempts.reduce((acc, curr) => acc + curr.percentage, 0) / courseAttempts.length) : 0;
+
+      return {
+        ...course,
+        enrollmentsCount: courseEnrollments.length,
+        completionsCount: courseCompletions.length,
+        completionRate: courseEnrollments.length > 0 ? Math.round((courseCompletions.length / courseEnrollments.length) * 100) : 0,
+        averageQuizScore: avgScore,
+        modulesCount: db.courseModules.filter(m => m.courseId === course.id).length
+      };
+    });
+
+    return {
+      metrics: {
+        coursesCreated: trainerCourses.length,
+        totalLearners: uniqueLearnerIds.length,
+        totalEnrollments: enrollments.length,
+        averageCompletionRate: avgCompletionRate,
+        averageQuizScore: avgQuizScore
+      },
+      courses: coursesWithDetails
+    } as any;
+  }
+
+  if (url === '/api/trainer/learners' && method === 'GET') {
+    const trainerCourseIds = currentUser?.role === 'ADMIN'
+      ? db.courses.map(c => c.id)
+      : db.courses.filter(c => c.trainerId === currentUser?.id).map(c => c.id);
+    const enrollments = db.enrollments.filter(e => trainerCourseIds.includes(e.courseId));
+    const learnerMap = new Map<string, any>();
+
+    for (const enr of enrollments) {
+      const user = db.users.find(u => u.id === enr.userId);
+      const course = db.courses.find(c => c.id === enr.courseId);
+      if (!user || !course) continue;
+
+      const modules = db.courseModules.filter(m => m.courseId === course.id);
+      const completedCount = modules.filter(m =>
+        db.lessonProgress.some(lp => lp.userId === user.id && lp.moduleId === m.id && lp.completed)
+      ).length;
+      const progress = modules.length > 0 ? Math.round((completedCount / modules.length) * 100) : 0;
+
+      const quiz = db.quizzes.find(q => q.courseId === course.id);
+      const attempt = quiz ? db.quizAttempts.find(qa => qa.quizId === quiz.id && qa.userId === user.id) : null;
+
+      if (!learnerMap.has(user.id)) {
+        learnerMap.set(user.id, {
+          userId: user.id,
+          name: user.name,
+          email: user.email,
+          department: user.department,
+          organization: user.organization,
+          profileImage: user.profileImage,
+          enrolledCourses: []
+        });
+      }
+
+      learnerMap.get(user.id).enrolledCourses.push({
+        courseId: course.id,
+        courseTitle: course.title,
+        enrolledAt: enr.enrolledAt,
+        status: enr.status,
+        progress,
+        quizScore: attempt ? attempt.percentage : null
+      });
+    }
+
+    return {
+      learners: Array.from(learnerMap.values())
+    } as any;
+  }
+
+  if (url === '/api/trainer/courses' && method === 'POST') {
+    const { title, description, category, difficulty, duration, thumbnail, skillIds, modules, quiz } = body;
+    if (!title || !description || !category) {
+      return { error: 'Title, description, and category are required' } as any;
+    }
+    const now = new Date().toISOString();
+    const courseId = `crs-${Date.now()}`;
+    const newCourse = {
+      id: courseId,
+      title,
+      description,
+      thumbnail: thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=80',
+      category,
+      difficulty: difficulty || 'BEGINNER',
+      duration: duration || '3.5 Hours',
+      status: 'PUBLISHED' as const,
+      trainerId: currentUser?.id || 'usr-trainer-1',
+      createdAt: now,
+      updatedAt: now
+    };
+    db.courses.push(newCourse);
+
+    if (Array.isArray(skillIds)) {
+      for (const sId of skillIds) {
+        db.courseSkills.push({ courseId, skillId: sId, targetLevel: 'ADVANCED' });
+      }
+    }
+
+    if (Array.isArray(modules) && modules.length > 0) {
+      modules.forEach((mod: any, idx: number) => {
+        const modId = `mod-${Date.now()}-${idx}`;
+        db.courseModules.push({
+          id: modId,
+          courseId,
+          title: mod.title || `Module ${idx + 1}`,
+          description: mod.description || 'Module learning material',
+          order: idx + 1
+        });
+        if (mod.content) {
+          db.learningResources.push({
+            id: `res-${Date.now()}-${idx}`,
+            moduleId: modId,
+            title: `${mod.title} - Core Guide`,
+            type: 'ARTICLE',
+            duration: '15 min read',
+            content: mod.content
+          });
+        }
+      });
+    }
+
+    if (quiz) {
+      const quizId = `quiz-${Date.now()}`;
+      db.quizzes.push({
+        id: quizId,
+        courseId,
+        title: quiz.title || `${title} Assessment`,
+        passingScore: quiz.passingScore || 70
+      });
+      if (Array.isArray(quiz.questions)) {
+        quiz.questions.forEach((q: any, qIdx: number) => {
+          db.quizQuestions.push({
+            id: `q-${Date.now()}-${qIdx}`,
+            quizId,
+            question: q.question,
+            options: q.options || ['Option A', 'Option B', 'Option C', 'Option D'],
+            correctAnswer: typeof q.correctAnswer === 'number' ? q.correctAnswer : 0,
+            marks: q.marks || 2,
+            explanation: q.explanation || 'Correct solution verified.'
+          });
+        });
+      }
+    }
+    clientDatabase.save();
+    return {
+      message: 'Course created and published successfully',
+      course: newCourse
+    } as any;
+  }
+
+  if (url.startsWith('/api/trainer/courses/') && url.endsWith('/curriculum') && method === 'GET') {
+    const courseId = url.split('/')[4];
+    const course = db.courses.find(c => c.id === courseId);
+    if (!course) {
+      return { error: 'Course not found' } as any;
+    }
+    const modules = db.courseModules
+      .filter(m => m.courseId === course.id)
+      .sort((a, b) => a.order - b.order)
+      .map(m => ({
+        ...m,
+        resources: db.learningResources.filter(r => r.moduleId === m.id)
+      }));
+    const quiz = db.quizzes.find(q => q.courseId === course.id);
+    const quizWithQuestions = quiz ? {
+      ...quiz,
+      questions: db.quizQuestions.filter(q => q.quizId === quiz.id)
+    } : null;
+    return { course, modules, quiz: quizWithQuestions } as any;
+  }
+
+  if (url.startsWith('/api/trainer/courses/') && method === 'PUT') {
+    const courseId = url.split('/').pop();
+    const course = db.courses.find(c => c.id === courseId);
+    if (!course) {
+      return { error: 'Course not found' } as any;
+    }
+    const { title, description, category, difficulty, duration, thumbnail, status } = body;
+    if (title) course.title = title;
+    if (description) course.description = description;
+    if (category) course.category = category;
+    if (difficulty) course.difficulty = difficulty;
+    if (duration) course.duration = duration;
+    if (thumbnail) course.thumbnail = thumbnail;
+    if (status) course.status = status;
+    course.updatedAt = new Date().toISOString();
+    clientDatabase.save();
+    return {
+      message: 'Course updated successfully',
+      course
+    } as any;
+  }
+
+  if (url.startsWith('/api/trainer/courses/') && method === 'DELETE') {
+    const courseId = url.split('/').pop();
+    const index = db.courses.findIndex(c => c.id === courseId);
+    if (index === -1) {
+      return { error: 'Course not found' } as any;
+    }
+    db.courses.splice(index, 1);
+    clientDatabase.save();
+    return { message: 'Course deleted successfully' } as any;
+  }
+
   if (url.startsWith('/api/trainer/')) {
     return {
       courses: db.courses,
@@ -544,6 +850,170 @@ export function handleClientMockRequest<T = any>(endpoint: string, options: Requ
         averagePassRate: 88,
         completionRate: 74
       }
+    } as any;
+  }
+
+  // 6b. ADMIN ROUTES
+  if (url === '/api/admin/dashboard' && method === 'GET') {
+    const totalUsers = db.users.length;
+    const learners = db.users.filter(u => u.role === 'LEARNER');
+    const trainers = db.users.filter(u => u.role === 'TRAINER');
+    const activeLearners = learners.filter(u => u.isActive);
+    const courses = db.courses;
+    const enrollments = db.enrollments;
+    const completedEnrollments = enrollments.filter(e => e.status === 'COMPLETED');
+    const certificates = db.certificates;
+    const quizAttempts = db.quizAttempts;
+
+    const overallCompletionRate = enrollments.length > 0
+      ? Math.round((completedEnrollments.length / enrollments.length) * 100)
+      : 0;
+
+    const avgQuizScore = quizAttempts.length > 0
+      ? Math.round(quizAttempts.reduce((acc, curr) => acc + curr.percentage, 0) / quizAttempts.length)
+      : 0;
+
+    const categoryStats: Record<string, { courses: number; enrollments: number; completions: number }> = {};
+    for (const course of courses) {
+      if (!categoryStats[course.category]) {
+        categoryStats[course.category] = { courses: 0, enrollments: 0, completions: 0 };
+      }
+      categoryStats[course.category].courses++;
+      const courseEnrs = enrollments.filter(e => e.courseId === course.id);
+      categoryStats[course.category].enrollments += courseEnrs.length;
+      categoryStats[course.category].completions += courseEnrs.filter(e => e.status === 'COMPLETED').length;
+    }
+
+    const competencyDist = { BEGINNER: 0, INTERMEDIATE: 0, ADVANCED: 0, EXPERT: 0 };
+    for (const us of db.userSkills) {
+      if (competencyDist[us.competencyLevel] !== undefined) {
+        competencyDist[us.competencyLevel]++;
+      }
+    }
+
+    const targetRoleDist: Record<string, number> = {};
+    for (const role of db.targetRoles) {
+      targetRoleDist[role.name] = learners.filter(l => l.targetRoleId === role.id).length;
+    }
+
+    const skillGapFrequency: Record<string, { count: number; name: string; avgScore: number; scores: number[] }> = {};
+    for (const skill of db.skills) {
+      skillGapFrequency[skill.id] = { count: 0, name: skill.name, avgScore: 0, scores: [] };
+    }
+    for (const us of db.userSkills) {
+      if (us.score < 60) {
+        if (skillGapFrequency[us.skillId]) {
+          skillGapFrequency[us.skillId].count++;
+          skillGapFrequency[us.skillId].scores.push(us.score);
+        }
+      }
+    }
+
+    const topOrganizationalGaps = Object.values(skillGapFrequency)
+      .filter(g => g.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5)
+      .map(g => ({
+        skillName: g.name,
+        learnersWithGap: g.count,
+        averageScore: g.scores.length > 0 ? Math.round(g.scores.reduce((a, b) => a + b, 0) / g.scores.length) : 0
+      }));
+
+    return {
+      metrics: {
+        totalUsers,
+        learnersCount: learners.length,
+        activeLearnersCount: activeLearners.length,
+        trainersCount: trainers.length,
+        coursesCount: courses.length,
+        enrollmentsCount: enrollments.length,
+        completionsCount: completedEnrollments.length,
+        certificatesCount: certificates.length,
+        overallCompletionRate,
+        averageQuizScore: avgQuizScore
+      },
+      categoryStats: Object.entries(categoryStats).map(([category, stats]) => ({ category, ...stats })),
+      competencyDistribution: [
+        { level: 'Beginner (0-39%)', count: competencyDist.BEGINNER, fill: '#ef4444' },
+        { level: 'Intermediate (40-69%)', count: competencyDist.INTERMEDIATE, fill: '#f59e0b' },
+        { level: 'Advanced (70-89%)', count: competencyDist.ADVANCED, fill: '#3b82f6' },
+        { level: 'Expert (90-100%)', count: competencyDist.EXPERT, fill: '#10b981' }
+      ],
+      targetRoleDistribution: Object.entries(targetRoleDist).map(([role, count]) => ({ role, count })),
+      topOrganizationalGaps,
+      recentCertificates: certificates.slice(-5).reverse().map(cert => {
+        const u = db.users.find(usr => usr.id === cert.userId);
+        const c = db.courses.find(crs => crs.id === cert.courseId);
+        return {
+          certificateNumber: cert.certificateNumber,
+          learnerName: u?.name || 'Learner',
+          courseTitle: c?.title || 'Course',
+          score: cert.score,
+          issuedAt: cert.issuedAt
+        };
+      })
+    } as any;
+  }
+
+  if (url === '/api/admin/users' && method === 'GET') {
+    const roleFilter = queryParams.get('role');
+    const deptFilter = queryParams.get('department');
+    const searchFilter = queryParams.get('search');
+    let users = db.users;
+
+    if (roleFilter && roleFilter !== 'ALL') {
+      users = users.filter(u => u.role === roleFilter);
+    }
+    if (deptFilter && deptFilter !== 'ALL') {
+      users = users.filter(u => u.department.toLowerCase() === deptFilter.toLowerCase());
+    }
+    if (searchFilter) {
+      const term = searchFilter.toLowerCase();
+      users = users.filter(u =>
+        u.name.toLowerCase().includes(term) ||
+        u.email.toLowerCase().includes(term) ||
+        u.organization.toLowerCase().includes(term) ||
+        u.department.toLowerCase().includes(term)
+      );
+    }
+
+    const enriched = users.map(user => {
+      const targetRole = db.targetRoles.find(r => r.id === user.targetRoleId);
+      const enrollmentsCount = db.enrollments.filter(e => e.userId === user.id).length;
+      const completedCount = db.enrollments.filter(e => e.userId === user.id && e.status === 'COMPLETED').length;
+      const certsCount = db.certificates.filter(c => c.userId === user.id).length;
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+        organization: user.organization,
+        profileImage: user.profileImage,
+        targetRoleId: user.targetRoleId,
+        isActive: user.isActive,
+        createdAt: user.createdAt,
+        targetRoleName: targetRole?.name || 'None Selected',
+        stats: { enrollmentsCount, completedCount, certsCount }
+      };
+    });
+
+    return { users: enriched } as any;
+  }
+
+  if (url.startsWith('/api/admin/users/') && url.endsWith('/status') && method === 'PUT') {
+    const userId = url.split('/')[4];
+    const user = db.users.find(u => u.id === userId);
+    if (!user) {
+      return { error: 'User not found' } as any;
+    }
+    const { isActive } = body;
+    user.isActive = Boolean(isActive);
+    user.updatedAt = new Date().toISOString();
+    clientDatabase.save();
+    return {
+      message: `User ${user.name} has been ${user.isActive ? 'activated' : 'deactivated'}.`,
+      user: { id: user.id, name: user.name, isActive: user.isActive }
     } as any;
   }
 
