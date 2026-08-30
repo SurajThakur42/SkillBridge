@@ -39,6 +39,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     refreshUser();
+
+    // api.ts fires this the moment ANY authenticated request gets a real 401
+    // (token expired / bad signature) - not just on startup. Token is already
+    // cleared from localStorage by api.ts before this fires; we just need to
+    // clear the in-memory user so ProtectedLayout redirects to /login.
+    const handleAuthExpired = () => {
+      setUser(null);
+      setLoading(false);
+    };
+    window.addEventListener('skillbridge:auth-expired', handleAuthExpired);
+    return () => window.removeEventListener('skillbridge:auth-expired', handleAuthExpired);
   }, []);
 
   const login = async (email: string, password = 'demo1234') => {
